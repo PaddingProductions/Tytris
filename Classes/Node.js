@@ -20,25 +20,15 @@ class Node {
     }
 }
 
-Node.prototype.tick = function () {
-    
-    var message = {};
-
-    //Input handle
-    this.input_handle();
-
-    //Gravity falls
-    this.gravity_tick  += game.gravity;
-
-    if (this.gravity_tick >= game.gravity_tick_limit) {
-        this.gravity_tick = 0;
-        this.y ++;
-    }
-    
+Node.prototype.if_contact = function () {
+        
 
     //check contact
-    if (chart[this.y+1][this.x] == 1) {
-        
+    if (this.y < 19) // makes sure that it doesn't go out of bounds as this is the stack chart
+    if (OccupationChart[this.y+1][this.x] == 1) { //checks stack contact
+        this.contact = true;
+    }
+    if (BoarderChart[this.y + BoarderIndent + 1][this.x+1] == 1) {  //checks boarder contact
         this.contact = true;
     }
 
@@ -50,11 +40,10 @@ Node.prototype.tick = function () {
 
 Node.prototype.lock = function () {    
     // add node as "occupied"
-    chart[this.y][this.x] = 1;
+    OccupationChart[this.y][this.x] = 1;
 
     //change into a entity for drawing;
     stack.push(this);
-
 
     return;
 }
@@ -62,11 +51,7 @@ Node.prototype.lock = function () {
 
 
 
-Node.prototype.input_handle = function () {
-    
-    if (moveKey['37']) this.x--;
-    if (moveKey['39']) this.x++;
-}
+
 
 Node.prototype.draw = function () {
 

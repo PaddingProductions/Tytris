@@ -58,7 +58,7 @@ var OccupationChart = [
 
 ];
 
-// holds nodes, for drawing and other future purposes :thinking:
+// holds blocks, for drawing and other future purposes :thinking:
 var stack = [];
 
 // inputs
@@ -98,14 +98,50 @@ var MasterList = {
     }
 
 }
+// SRS kick table
+const Kick_Table = {
+    "T,S,Z,L,J" : {
+        "O": [
+            { x:0,  y:0  },
+            { x:0,  y:0  },
+            { x:0,  y:0  },
+            { x:0,  y:0  },
+            { x:0,  y:0  },
+        ],
+        "R": [
+            { x:0,  y:0  },
+            { x:1,  y:0  },
+            { x:1,  y:-1 },
+            { x:0,  y:2  },
+            { x:1,  y:2  },
+        ],
+        "L": [
+            { x:0,  y:0  },
+            { x:-1, y:0  },
+            { x:-1, y:-1 },
+            { x:0,  y:2  },
+            { x:-1, y:2  },
+        ],
+        "2": [
+            { x:0,  y:0  },
+            { x:0,  y:0  },
+            { x:0,  y:0  },
+            { x:0,  y:0  },
+            { x:0,  y:0  },
+        ],
+    },
 
+    "t": Kick_Table["T,S,Z,L,J"],
+}
 
 
 var game  = {
     gravity: 1,
     gravity_tick_limit: 10,
 
-    node_size: 25,
+    lock_limit: 20, // lock delay frames
+
+    block_size: 25,
 
     fieldx: 100,
     fieldy: 100,
@@ -130,7 +166,7 @@ var game  = {
         game.Field_draw();
         // draw Piece
         Current_piece.draw();
-        // draw stack, independent nodes now
+        // draw stack, independent block now
         for (let i=0; i<stack.length; i++) stack[i].draw();
 
 
@@ -146,16 +182,16 @@ var game  = {
 
         // base rectangle
         ctx.fillStyle = "#000";
-        ctx.fillRect(0,0, 10*game.node_size, 20*game.node_size);
+        ctx.fillRect(0,0, 10*game.block_size, 20*game.block_size);
         
         // soft grid 
         ctx.fillStyle = "#333333";
 
         for (let y=0; y<21; y++) {
-            ctx.fillRect(0, y*game.node_size, 10*game.node_size, 2);
+            ctx.fillRect(0, y*game.block_size, 10*game.block_size, 2);
         }
         for (let x=0; x<11; x++) {
-            ctx.fillRect(x*game.node_size, 0, 2, 20*game.node_size);
+            ctx.fillRect(x*game.block_size, 0, 2, 20*game.block_size);
         }
 
         ctx.restore();

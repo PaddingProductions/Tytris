@@ -130,9 +130,8 @@ const Kick_Table = {
             { x:0,  y:0  },
         ],
     },
-
-    "t": Kick_Table["T,S,Z,L,J"],
 }
+Kick_Table["t"] = Kick_Table["T,S,Z,L,J"];
 
 
 var game  = {
@@ -213,7 +212,6 @@ var game  = {
 
                 piece = new Piece (4, 1, 't');
                 
-
                 break;
         }
 

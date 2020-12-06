@@ -3,6 +3,8 @@ class Piece {
     constructor (x, y, type, color) {
 
         this.type = MasterList[type];
+        this.shape = type;
+        
         this.children = [];
         this.rotation = 'O'; // O, R, L, 2
 
@@ -51,38 +53,31 @@ Piece.prototype.tick = function () {
         this.gravity_tick = 0;
     }
 
-    // updates block position to account inputs
+    // updates block position to account for gravity
     this.tick_blocks();
 
-
-    // to shift the piece back into the playfield
-    var xBoarderContactChange = 0;
-
-    // blocks check contact
+    // blocks check boarder/stack contact
     for (let i=0; i<this.children.length; i++) {
         var curr = this.children[i];
         var message;
 
         message = curr.if_contact();
 
-
-
-        for (let i=0; i<message.length; i++)  // anaylze return message
+        for (let k=0; k<message.length; k++)  // anaylze return message
         {
-        if (message[i].ID ==  1 || message[i].ID == 2) {  // if contacting floor
+        if (message[k].ID ==  1 || message[k].ID == 2) {  // if contacting floor
             this.contact = true;
-        }
-
-        if (message[i].ID == 3.1) {        // if crossing left bound
-            xBoarderContactChange = Math.max(xBoarderContactChange, message[i].shiftX);
-        }
-        if (message[i].ID == 3.2) {        // if crossing right bound
-            xBoarderContactChange = Math.min(xBoarderContactChange, message[i].shiftX);
         }
         }
     }
 
-    this.x += xBoarderContactChange; // changes x 
+    // updates block position again to account for contact/ boarder checks
+    this.tick_blocks();
+
+
+
+    // blocks check                                                                         
+
 
     if (this.contact) { // locks if needed
         if (this.lock_delay == game.lock_limit) {
@@ -91,15 +86,7 @@ Piece.prototype.tick = function () {
         } else {
             this.lock_delay ++;
         }
-    }
-
-
-
-    // updates block position again to account for contact/ boarder checks
-    this.tick_blocks();
-    
-
-   
+    }  
 }
 
 
@@ -113,9 +100,52 @@ Piece.prototype.input_handle = function () {
     if (moveKey[37] == true) this.x--; //left
     if (moveKey[39] == true) this.x++; //right
 
-    if (moveKey[38] == true) {  // up 
-        RotatingSystem.rotate(this, "R");
+    this.tick_blocks();
+
+    // to shift the piece back into the playfield
+    var revert = false;
+
+    for (let i=0; i<this.children.length; i++) { // checks if input is valid 
+
+        var curr = this.children[i];
+
+        var message; 
+        message = curr.if_contact();
+
+        
+        for (let k=0; k<message.length; k++) { // only check if stack overlap(bump into stack while xshifting)
+                                               // and boarders
+            if (message[k].ID == 4 || message[k].ID == 3.1 || message[k].ID == 3.2) {
+                revert = true;
+            } 
+
+        }
+    }
+    
+    if (revert) {
+        if (moveKey[37] == true) this.x++; //left
+        if (moveKey[39] == true) this.x--; //right
+    }
+
+
+
+
+
+    // it is placed in this order to make sure if one operation fails the other will continue and not be reverte
+    // all other input command should have their own check, excluding rotation
+
+    if (commandKey[38] == true) {  // up 
+        var newRotation;
+
+        if (this.rotation == "O") newRotation = "R";
+        if (this.rotation == "R") newRotation = "2";
+        if (this.rotation == "2") newRotation = "L";
+        if (this.rotation == "L") newRotation = "O";
+
+        RotatingSystem.rotate(this, newRotation);
     } 
+    this.tick_blocks();
+
 }
 
 

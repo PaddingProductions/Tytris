@@ -52,17 +52,26 @@ Block.prototype.if_contact = function () {
         });
     }
 
-    if (this.y < 19)              // makes sure that it doesn't go out of bounds as this is the stack chart
-    if (OccupationChart[this.y+1][this.x] == 1) {   // checks stack contact
+    if (this.y < 19 && this.x <10 && this.x >=0)   // makes sure that it doesn't go out of bounds as this is the stack chart
+    {           
+    if (OccupationChart[this.y+1][this.x] == 1) {   // checks stack contact downwards, meaning begin lock delay
         
         return_message.push({
             message: "stack contact",
             ID: 1,
         });
     }
+    if (OccupationChart[this.y][this.x] == 1) {
 
-    if (BoarderChart[this.y + BoarderIndent + 1][1]) {  // checks floor contact
-        
+        return_message.push({
+            message: "overlap stack, input shiftx request invalid",
+            ID: 4,
+            
+        });
+    }
+    }
+
+    if (this.y < -BoarderIndent || this.y+1 >= 20)  {// if past boardars        
         return_message.push({
             message: "floor contact",
             ID: 2,

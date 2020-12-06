@@ -50,16 +50,18 @@ var OccupationChart = [
     [0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,1,1,0,0],
+    [0,0,0,10,0,0,1,0,0,0],
+    [1,0,0,1,0,0,1,0,1,1],
+    [0,0,0,1,0,0,1,0,0,1],
+    [1,0,1,1,0,0,1,0,1,1],
 
 ];
 
 // holds blocks, for drawing and other future purposes :thinking:
 var stack = [];
+// for debugging purposes, allows you see the custom-made stack
+for (let y=0; y<20; y++) for (let x=0; x<10; x++) if (OccupationChart[y][x] == 1) stack.push(new Block(x,y));
 
 // inputs
 var moveKey = {};

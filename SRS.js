@@ -24,13 +24,15 @@ const RotatingSystem = {
             var test_map =  MasterList[piece.shape][newRotation]; // the new map to check
             
             // checks if this solution does not overlap
-            var is_valid = RotatingSystem.check_kick_solution(startX, startY, kick_tests[i], piece); 
+            var is_valid = RotatingSystem.check_kick_solution(startX, startY, kick_tests[i], test_map); 
 
             if (is_valid) { // it it does work
  
                 piece.rotation = newRotation  // change variables
                 piece.map = MasterList[piece.shape][piece.rotation];
-
+                piece.x += kick_tests[i].x;
+                piece.y -= kick_tests[i].y; // because the kick table is generated under the assumption y axis grows up, unlike js
+                piece.lock_delay = 0; // lock delay reset
                 return;
             }
             
@@ -40,13 +42,15 @@ const RotatingSystem = {
 
     check_kick_solution: function (startX, startY, kick_test, map) { // checks for overlaps after applying rotation
 
+        startX += kick_test.x;
+        startY -= kick_test.y;
 
         for  (let y=0; y<map.length; y++) { 
             for (let x=0; x<map[y].length; x++) {  // for all nodes
 
 
-                var currX = startX + x + kick_test.x; 
-                var currY = startY + y + kick_test.y; 
+                var currX = startX + x; 
+                var currY = startY + y;  // this is because kicktable's y axis goes up not down like in canvas
                 
                 if (map[y][x] == 0) continue; // no need to process empty nodes
 

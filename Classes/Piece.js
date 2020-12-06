@@ -56,6 +56,8 @@ Piece.prototype.tick = function () {
     // updates block position to account for gravity
     this.tick_blocks();
 
+    this.contact = false; // to reset contact, if it really is touching it will reset
+
     // blocks check boarder/stack contact
     for (let i=0; i<this.children.length; i++) {
         var curr = this.children[i];
@@ -141,6 +143,16 @@ Piece.prototype.input_handle = function () {
         if (this.rotation == "R") newRotation = "2";
         if (this.rotation == "2") newRotation = "L";
         if (this.rotation == "L") newRotation = "O";
+
+        RotatingSystem.rotate(this, newRotation);
+    } 
+    if (commandKey[90] == true) {  // up 
+        var newRotation;
+
+        if (this.rotation == "O") newRotation = "L";
+        if (this.rotation == "L") newRotation = "2";
+        if (this.rotation == "2") newRotation = "R";
+        if (this.rotation == "R") newRotation = "O";
 
         RotatingSystem.rotate(this, newRotation);
     } 

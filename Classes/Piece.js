@@ -19,16 +19,21 @@ class Piece {
 
         this.lock_delay = 0; // lock delay
 
+        // handling 
+        this.ARM = false;  // true/false variable, identifies if is in auto repeat movement
+        this.ARR_tick = 0; // a tick variable to identify if need to shift in this frame
+        this.DAS_tick = 0; // a tick variable to track DAS time
+        this.ARM_direct;   // a variable to track direction of ARM
+
         //sets up the default map
         this.add_child(new Block());
         this.add_child(new Block());
         this.add_child(new Block());
         this.add_child(new Block());
 
-        switch (type) {
-            case 't': 
-                this.map = this.type["O"];
-        } 
+        
+        this.map = this.type["O"];
+        
         this.tick_blocks(); // creates child blocks
     } 
 }
@@ -55,6 +60,10 @@ Piece.prototype.tick = function () {
 
     // updates block position to account for gravity
     this.tick_blocks();
+
+
+
+
 
     this.contact = false; // to reset contact, if it really is touching it will reset
 
@@ -84,7 +93,7 @@ Piece.prototype.tick = function () {
     if (this.contact) { // locks if needed
         if (this.lock_delay == game.lock_limit) {
             this.lock();
-            this.lock_delay = 0;
+            Current_piece = undefined; // goodbye world
         } else {
             this.lock_delay ++;
         }
@@ -97,37 +106,64 @@ Piece.prototype.tick = function () {
 
 
 
+
+
 Piece.prototype.input_handle = function () {
 
-    if (moveKey[37] == true) this.x--; //left
-    if (moveKey[39] == true) this.x++; //right
-
-    this.tick_blocks();
-
-    // to shift the piece back into the playfield
-    var revert = false;
-
-    for (let i=0; i<this.children.length; i++) { // checks if input is valid 
-
-        var curr = this.children[i];
-
-        var message; 
-        message = curr.if_contact();
-
-        
-        for (let k=0; k<message.length; k++) { // only check if stack overlap(bump into stack while xshifting)
-                                               // and boarders
-            if (message[k].ID == 4 || message[k].ID == 3.1 || message[k].ID == 3.2) {
-                revert = true;
-            } 
-
-        }
+    if (commandKey[37] == true) {
+        this.x--; //left
+        this.ARM_direct = -1; // set ARM direct for when it begins
     }
+    if (commandKey[39] == true) {
+        this.x++; //right
+        this.ARM_direct = 1; // set ARM direct for when it begins
+    }
+
+    // not that movekey is true if command key is true, but converse and inverse of the statment isn't true
+    if (moveKey[37] == true) { // tick DAS if needed
+        this.DAS_tick ++;
+
+        if (this.ARM_direct == -1) {  // if ARM is cancelled because you commanded it to move the other way
+            this.ARM = false; 
+            this.DAS_tick = 0; 
+        } 
+    }
+    if (moveKey[39] == true) {
+        this.DAS_tick ++;
+
+        if (this.ARM_direct == 1) {  // if ARM is cancelled because you commanded it to move the other way
+            this.ARM = false; 
+            this.DAS_tick = 0; 
+        } 
+    }    
+
+    
+    if (this.DAS_tick == game.DAS) { // if DAS time up, begin ARM
+        this.ARM = true;
+        this.DAS_tick = 0;
+    }
+
+    if (this.ARM) {     //ARM; auto repeat movement
+
+        if (this.ARR_tick == game.ARR) { // if ARR tick is up
+
+            this.x += this.ARM_direct;
+            this.ARR_tick = 0;
+        }
+        this.ARR_tick ++;
+    }
+
+
+
+    
+    // to shift the piece back into the playfield
+    var revert = !this.check_blocks();
     
     if (revert) {
-        if (moveKey[37] == true) this.x++; //left
-        if (moveKey[39] == true) this.x--; //right
+        this.x -= this.ARM_direct; // this works because ARM direct is set before ARM starts
     }
+
+
 
 
 
@@ -136,7 +172,7 @@ Piece.prototype.input_handle = function () {
     // it is placed in this order to make sure if one operation fails the other will continue and not be reverte
     // all other input command should have their own check, excluding rotation
 
-    if (commandKey[38] == true) {  // up 
+    if (commandKey[38] == true) {  // up , cw rotation
         var newRotation;
 
         if (this.rotation == "O") newRotation = "R";
@@ -146,7 +182,7 @@ Piece.prototype.input_handle = function () {
 
         RotatingSystem.rotate(this, newRotation);
     } 
-    if (commandKey[90] == true) {  // up 
+    if (commandKey[90] == true) {  // z, ccw rotation 
         var newRotation;
 
         if (this.rotation == "O") newRotation = "L";
@@ -158,6 +194,20 @@ Piece.prototype.input_handle = function () {
     } 
     this.tick_blocks();
 
+
+
+    // harddrop
+    if (commandKey[32]) { // space key
+
+        while (this.check_blocks()) {  //I can check blocks without updating because it 
+                                       // only uses x,y and map, not individually checking each child
+            this.y++;
+        }
+        this.y--;
+        this.tick_blocks();
+        this.lock();
+        Current_piece = undefined;
+    }
 }
 
 
@@ -201,6 +251,7 @@ Piece.prototype.lock = function () {
 
 
 
+
 // Spawns and attach the block 
 Piece.prototype.tick_blocks = function () {
 
@@ -225,8 +276,39 @@ Piece.prototype.tick_blocks = function () {
 
 
 
+
+
 Piece.prototype.add_child = function (child) {
 
     this.children.push(child);
     return child;
+}
+
+
+
+
+
+
+
+
+
+
+Piece.prototype.check_blocks = function () { // checks for overlaps without requireing to tick nodes beforehand
+
+    for  (let y=0; y<this.map.length; y++) { 
+        for (let x=0; x<this.map[y].length; x++) {  // for all nodes
+            
+            if (this.map[y][x] == 0) continue; // no need to process empty nodes
+
+            var currX = this.x + x - this.type.centerX; 
+            var currY = this.y + y - this.type.centerY; 
+
+            if (currX < 0 || currY < 0 || currX >= 10 || currY >= 20) return false; // if past boardars
+            if (OccupationChart[currY][currX] == 1) return false; // if overlapping stack
+            
+
+            
+        }
+    }
+    return true;
 }

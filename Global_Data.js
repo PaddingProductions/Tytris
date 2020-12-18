@@ -1,5 +1,6 @@
 var Global_mode = "game";
 var Current_piece;
+var Shadow_piece; 
 
 // Boarders, used to check if going out of bounds, is required for some kicks
 const BoarderIndent = 2;

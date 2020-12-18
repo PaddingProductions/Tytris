@@ -15,7 +15,6 @@ const RotatingSystem = {
             });
         }
 
-        console.log(kick_tests);
 
         for (let i=0; i<kick_tests.length; i++) {  // for all tests
             

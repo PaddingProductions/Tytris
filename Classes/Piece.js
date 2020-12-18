@@ -88,6 +88,7 @@ Piece.prototype.tick = function () {
     // updates block position again to account for contact/ boarder checks
     this.tick_blocks();
 
+    //this.updateShadow();
 
 
     // blocks check                                                                         
@@ -105,6 +106,11 @@ Piece.prototype.tick = function () {
 
 
 
+
+
+Piece.prototype.updateShadow = function () {
+
+}
 
 
 
@@ -166,9 +172,7 @@ Piece.prototype.input_handle = function () {
     }
 
     if (this.ARM) {                         //ARM; auto repeat movement
-
         if (this.ARR_tick == game.ARR) {    // if ARR tick is up
-
             this.x += this.ARM_direct;
             this.ARR_tick = 0;
         }
@@ -184,9 +188,6 @@ Piece.prototype.input_handle = function () {
    
     if (revert) {
         this.x -= this.ARM_direct;         // this works because ARM direct is set before ARM starts
-    }
-    if (this.x >= 10) {
-        console.log("ERR");
     }
 
 

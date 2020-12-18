@@ -3,7 +3,7 @@ var game  = {
     gravity: 1,
     gravity_tick_limit: 10,
 
-    lock_limit: 20, // lock delay frames
+    lock_limit: 50, // lock delay frames
 
     block_size: 25,
 
@@ -18,16 +18,46 @@ var game  = {
     ARR: 1, //Auto repeat rate, measured in frames per movement. How fast pieces travels during ARM;
     SDF: -1, //Soft drop factor, measured in gravity tick increase per frame. -1 = infinite;
 
-
+    // Gameplay-affecting variables
     tick: function () {        
         
 
         // tick piece
         Current_piece.tick();
 
+        var clears = []
+        //check for clears
+        for (let y =0; y < 20; y++) {
+            for (let x =0; x < 10; x++) {
+                if (OccupationChart[y][x] == 0) break;
+                if (x == 9) {                            // line filled
+                    clears.push(y);
+                }
+            }
+        }
+                      
+        for (let k=0; k<clears.length; k++) {  // remove and shift nodes
+            for (let i=0; i<stack.length; i++) { 
+
+                if (stack[i].y == clears[k]) {stack.splice(i,1);  i--;}
+                else if (stack[i].y < clears[k]) stack[i].y++; 
+            }
+        }
+
+        if (clears.length > 0) {  // reset stack
+            reset_OccupationChart(); 
+            for (let i=0; i<stack.length; i++) {
+                OccupationChart[stack[i].y][stack[i].x] = 1;
+            }
+        }
+
+
         //Spawn piece if needed 
         if (Current_piece == undefined) {
             Current_piece = this.SpawnPiece(Previews[0]);
+            //Shadow_piece = new Shadow(Previews[0]);
+            //Shadow_piece.tick(); 
+            
             Previews.splice(0, 1);
             game.update_preview();
         }
@@ -39,6 +69,7 @@ var game  = {
         game.Field_draw();
         // draw Piece
         Current_piece.draw();
+        //Shadow_piece.draw();
         // draw stack, independent block now
         for (let i=0; i<stack.length; i++) stack[i].draw();
 
@@ -108,16 +139,14 @@ var game  = {
 
     update_preview: function () {
 
-        
-
         for (let i = Previews.length; i < 5; i++) {
 
             if (Bag.length == 0) { // reset bag if it's all used
-                Bag = ["l"];
+                // Bag = ["l","j","s","z","o","i","t"];
+                Bag = ["l","j","s","z","o","i","t"];
             }
 
             var randint = Math.floor( Math.random()* Bag.length ); // gets random index from bag 
-
             Previews.push(  // push the random piece into the previews
                 Bag[randint]
             );

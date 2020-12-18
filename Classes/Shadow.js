@@ -1,0 +1,5 @@
+class Shadow {
+    constructor (shape) {
+        
+    }
+}

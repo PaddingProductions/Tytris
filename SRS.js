@@ -33,6 +33,7 @@ const RotatingSystem = {
                 piece.x += kick_tests[i].x;
                 piece.y -= kick_tests[i].y; // because the kick table is generated under the assumption y axis grows up, unlike js
                 piece.lock_delay = 0; // lock delay reset
+                piece.lock_reset_counter ++;
                 return;
             }
             

@@ -3,6 +3,7 @@ const ctx = canvas.getContext("2d");
 
 game.update_preview(); // very important, the loop only works if it has a starting point
 Current_piece = game.SpawnPiece(Previews[0]);
+Shadow_piece = new Shadow(Current_piece);
 Previews.splice(0, 1);
 game.update_preview();
 

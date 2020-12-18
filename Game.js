@@ -5,6 +5,8 @@ var game  = {
 
     lock_limit: 50, // lock delay frames
 
+    lock_reset_limit: 5,
+
     block_size: 25,
 
     fieldx: 200,
@@ -24,6 +26,9 @@ var game  = {
 
         // tick piece
         Current_piece.tick();
+        Shadow_piece.tick(); 
+
+
 
         var clears = []
         //check for clears
@@ -55,8 +60,9 @@ var game  = {
         //Spawn piece if needed 
         if (Current_piece == undefined) {
             Current_piece = this.SpawnPiece(Previews[0]);
-            //Shadow_piece = new Shadow(Previews[0]);
-            //Shadow_piece.tick(); 
+
+            Shadow_piece = new Shadow(Current_piece);
+            Shadow_piece.tick(); 
             
             Previews.splice(0, 1);
             game.update_preview();
@@ -68,8 +74,9 @@ var game  = {
         // draw grid
         game.Field_draw();
         // draw Piece
+        Shadow_piece.draw();
         Current_piece.draw();
-        //Shadow_piece.draw();
+        
         // draw stack, independent block now
         for (let i=0; i<stack.length; i++) stack[i].draw();
 

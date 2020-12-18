@@ -4,7 +4,6 @@ class Piece {
 
         this.type = MasterList[type];
         this.shape = type;
-        this.name = type;
         
         this.children = [];
         this.rotation = 'O'; // O, R, L, 2
@@ -15,10 +14,11 @@ class Piece {
         this.map = [];
 
         this.contact = false; //if touching floor
-
+        
         this.gravity_tick = 0; // gravity counter 
 
         this.lock_delay = 0; // lock delay
+        this.lock_reset_limit = 0; // amount of times you can reset the lock limit
 
         // handling 
         this.ARM = false;  // true/false variable, identifies if is in auto repeat movement
@@ -88,13 +88,14 @@ Piece.prototype.tick = function () {
     // updates block position again to account for contact/ boarder checks
     this.tick_blocks();
 
-    //this.updateShadow();
-
 
     // blocks check                                                                         
 
 
     if (this.contact) { // locks if needed
+        if (this.lock_reset_counter == game.lock_reset_limit) {
+            this.lock();
+        }
         if (this.lock_delay == game.lock_limit) {
             this.lock();
         } else {
@@ -108,10 +109,6 @@ Piece.prototype.tick = function () {
 
 
 
-Piece.prototype.updateShadow = function () {
-
-}
-
 
 
 
@@ -119,12 +116,12 @@ Piece.prototype.updateShadow = function () {
 Piece.prototype.input_handle = function () {
 
     if (commandKey[67] == true) {        // hold
-
         if (!this.hold_limit)  {
             newType = Hold;
-            Hold = Current_piece.name;
+            Hold = Current_piece.shape;
 
             Current_piece = game.SpawnPiece(newType);
+            Shadow_piece = new Shadow(Current_piece);
             Current_piece.hold_limit = true;
         }
     }
@@ -328,8 +325,6 @@ Piece.prototype.check_blocks = function () { // checks for overlaps without requ
 
             if (currX < 0 || currY < 0 || currX >= 10 || currY >= 20) return false; // if past boardars
             if (OccupationChart[currY][currX] == 1) return false; // if overlapping stack
-            
-
             
         }
     }

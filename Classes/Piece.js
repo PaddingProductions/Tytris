@@ -4,6 +4,7 @@ class Piece {
 
         this.type = MasterList[type];
         this.shape = type;
+        this.name = type;
         
         this.children = [];
         this.rotation = 'O'; // O, R, L, 2
@@ -26,10 +27,10 @@ class Piece {
         this.ARM_direct;   // a variable to track direction of ARM
 
         //sets up the default map
-        this.add_child(new Block());
-        this.add_child(new Block());
-        this.add_child(new Block());
-        this.add_child(new Block());
+        this.add_child(new Block(x,y,color));
+        this.add_child(new Block(x,y,color));
+        this.add_child(new Block(x,y,color));
+        this.add_child(new Block(x,y,color));
 
         
         this.map = this.type["O"];
@@ -45,6 +46,8 @@ Piece.prototype.tick = function () {
     
 
     this.input_handle();
+
+    if (this.toBeDestroyed) return; 
 
     //Gravity falls
     this.gravity_tick  += game.gravity;
@@ -93,7 +96,6 @@ Piece.prototype.tick = function () {
     if (this.contact) { // locks if needed
         if (this.lock_delay == game.lock_limit) {
             this.lock();
-            Current_piece = undefined; // goodbye world
         } else {
             this.lock_delay ++;
         }
@@ -110,42 +112,62 @@ Piece.prototype.tick = function () {
 
 Piece.prototype.input_handle = function () {
 
-    if (commandKey[37] == true) {
-        this.x--; //left
-        this.ARM_direct = -1; // set ARM direct for when it begins
-    }
-    if (commandKey[39] == true) {
-        this.x++; //right
-        this.ARM_direct = 1; // set ARM direct for when it begins
+    if (commandKey[67] == true) {        // hold
+
+        if (!this.hold_limit)  {
+            newType = Hold;
+            Hold = Current_piece.name;
+
+            Current_piece = game.SpawnPiece(newType);
+            Current_piece.hold_limit = true;
+        }
     }
 
-    // not that movekey is true if command key is true, but converse and inverse of the statment isn't true
-    if (moveKey[37] == true) { // tick DAS if needed
-        this.DAS_tick ++;
 
-        if (this.ARM_direct == -1) {  // if ARM is cancelled because you commanded it to move the other way
+
+    if (commandKey[37] == true) {         // left
+
+        if (this.ARM_direct == 1) {       //cancel ARM because you commanded it to move the other way
             this.ARM = false; 
             this.DAS_tick = 0; 
         } 
-    }
-    if (moveKey[39] == true) {
-        this.DAS_tick ++;
+        if (!this.ARM) {                  // only move if !ARM because you would move at 2x speed if so.
+            this.x --;
+        }
+        this.ARM_direct = -1;             // set ARM direct for when it begins
+    } 
 
-        if (this.ARM_direct == 1) {  // if ARM is cancelled because you commanded it to move the other way
+    if (commandKey[39] == true) {         //right
+
+        if (this.ARM_direct == -1) {  
             this.ARM = false; 
             this.DAS_tick = 0; 
         } 
-    }    
+        if (!this.ARM) { 
+            this.x ++;
+        }
+        this.ARM_direct = 1; 
+    }
+
+
+    // note that movekey is true if command key is true, but converse and inverse of the statment isn't true
+    if (moveKey[37] == true) {             // tick DAS if needed
+        this.DAS_tick ++;
+    } else if (moveKey[39] == true) {
+        this.DAS_tick ++;
+    } else {
+        this.DAS_tick = 0;                //reset if keys is not pressed
+    }
 
     
-    if (this.DAS_tick == game.DAS) { // if DAS time up, begin ARM
+    if (this.DAS_tick == game.DAS) {       // if DAS time up, begin ARM
         this.ARM = true;
         this.DAS_tick = 0;
     }
 
-    if (this.ARM) {     //ARM; auto repeat movement
+    if (this.ARM) {                         //ARM; auto repeat movement
 
-        if (this.ARR_tick == game.ARR) { // if ARR tick is up
+        if (this.ARR_tick == game.ARR) {    // if ARR tick is up
 
             this.x += this.ARM_direct;
             this.ARR_tick = 0;
@@ -159,8 +181,12 @@ Piece.prototype.input_handle = function () {
     // to shift the piece back into the playfield
     var revert = !this.check_blocks();
     
+   
     if (revert) {
-        this.x -= this.ARM_direct; // this works because ARM direct is set before ARM starts
+        this.x -= this.ARM_direct;         // this works because ARM direct is set before ARM starts
+    }
+    if (this.x >= 10) {
+        console.log("ERR");
     }
 
 
@@ -206,7 +232,6 @@ Piece.prototype.input_handle = function () {
         this.y--;
         this.tick_blocks();
         this.lock();
-        Current_piece = undefined;
     }
 }
 
@@ -238,10 +263,8 @@ Piece.prototype.lock = function () {
     for (let i=0; i<this.children.length; i++) {
         this.children[i].lock();
     }
-
-    // spawn next piece as needed
-    Current_piece = game.Spawn_Piece("t");
-
+    this.toBeDestroyed = true;
+    Current_piece = undefined; // goodbye world
 
     return;
 }
@@ -255,16 +278,15 @@ Piece.prototype.lock = function () {
 // Spawns and attach the block 
 Piece.prototype.tick_blocks = function () {
 
-    var cnt = 0;
-
+    cnt = 0;
     for (let y =0; y<this.map.length; y++) {
         for (let x =0; x<this.map[y].length; x++) {
 
             if (this.map[y][x] == 1) { //sets the positions of the blocks to the correct ones
-                this.children[cnt].x = this.x + (x - this.type.centerX); // the equation is quite funky, but draw it out
-                this.children[cnt].y = this.y + (y - this.type.centerY);
+                this.children[cnt].x = (this.x - this.type.centerX) + x; // the equation is quite funky, but draw it out
+                this.children[cnt].y = (this.y - this.type.centerY) + y;
 
-                cnt ++;
+                cnt++;
             }
         }
     }

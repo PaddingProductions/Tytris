@@ -1,21 +1,13 @@
 class Block {
 
-    constructor (x, y, master, color) {
+    constructor (x, y, color) {
         //position
         this.x = x;
         this.y = y; 
-        this.RposX = x +1;
-        this.RposY = y +2;
-
-        this.master = master;
 
         //rendering
         //this.color = color;
-        this.color = "#ddddddd";
-
-        // one for gravity, one to prevent infinite rotation
-        this.gravity_tick = 0; 
-        this.rotation_tick = 0;
+        this.color = color;
 
         // if touching thing
         this.contact = false;
@@ -108,7 +100,7 @@ Block.prototype.draw = function () {
     ctx.save();
     ctx.translate(game.fieldx, game.fieldy);
 
-    ctx.fillStyle = "#dddddd";
+    ctx.fillStyle = this.color;
     ctx.fillRect(this.x*game.block_size, this.y*game.block_size, game.block_size, game.block_size);
 
     ctx.restore();

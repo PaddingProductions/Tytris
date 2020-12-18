@@ -4,6 +4,12 @@ var Current_piece;
 // Boarders, used to check if going out of bounds, is required for some kicks
 const BoarderIndent = 2;
 
+const preview_box_offsetx = 350;
+const preview_box_offsety = 0;
+
+const hold_box_offsetx = -150;
+const hold_box_offsety = 0;
+
 const BoarderChart = [
     [1,  0,0,0,0,0,0,0,0,0,0,  1],
     [1,  0,0,0,0,0,0,0,0,0,0,  1],
@@ -32,31 +38,37 @@ const BoarderChart = [
     [1  ,1,1,1,1,1,1,1,1,1,1  ,1],
 ];
 
-// It displays ur stack for the computation part, marks as 1 if occupied
-var OccupationChart = [
 
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
+OccupationChart = []; // It displays ur stack for the computation part, marks as 1 if occupied
 
-];
+// a function that is very,very niche. but it has it's uses
+function reset_OccupationChart () {
+    OccupationChart = [
+
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0],
+
+    ];
+    return;
+} reset_OccupationChart();
 
 // holds blocks, for drawing and other future purposes :thinking:
 var stack = [];
@@ -97,6 +109,7 @@ var MasterList = {
 
         centerX: 1,
         centerY: 1,
+        color: '#a460d1',
     },
     "l": {
         'O': [
@@ -123,6 +136,8 @@ var MasterList = {
 
         centerX: 1,
         centerY: 1,
+        color: '#4650bd',
+
     },
     "j": {
         'O': [
@@ -149,6 +164,8 @@ var MasterList = {
 
         centerX: 1,
         centerY: 1,
+        color: '#e68c2c',
+
     },
     "s": {
         'O': [
@@ -175,6 +192,7 @@ var MasterList = {
 
         centerX: 1,
         centerY: 1,
+        color: "#ff0048",
     },
     "z": {
         'O': [
@@ -195,12 +213,13 @@ var MasterList = {
         ],
         '2': [
             [0,0,0],
-            [0,1,1],
             [1,1,0],
+            [0,1,1],
         ],
 
         centerX: 1,
         centerY: 1,
+        color: "#3ff50c",
     },
     "i": {
         'O': [
@@ -233,8 +252,9 @@ var MasterList = {
             [0,0,0,0,0],
         ],
 
-        centerX: 3,
-        centerY: 3,
+        centerX: 2,
+        centerY: 2,
+        color: "#0ce9f5",
     },
     "o": {
         'O': [
@@ -249,18 +269,19 @@ var MasterList = {
             [0,1,1],
         ],
         'L': [
+            [1,1,0],
+            [1,1,0],
             [0,0,0],
-            [1,1,0],
-            [1,1,0],
         ],
         '2': [
-            [1,1,0],
-            [1,1,0],
             [0,0,0],
+            [1,1,0],
+            [1,1,0],
         ],
 
         centerX: 1,
         centerY: 1,
+        color: "#ffe414",
     },
     
 }
@@ -351,4 +372,5 @@ Kick_Table["z"] = Kick_Table["T,S,Z,L,J"];
 
 
 var Previews = []; // holds the five previews
-var Bag = ["t","l","j","s","z","o","i"];
+var Bag = []; // 7-bag system
+var Hold = undefined;

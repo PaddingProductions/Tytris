@@ -113,7 +113,7 @@ var game  = {
         for (let i = Previews.length; i < 5; i++) {
 
             if (Bag.length == 0) { // reset bag if it's all used
-                Bag = ["i", "o", "l", "j", "s", "z", "t"];
+                Bag = ["l"];
             }
 
             var randint = Math.floor( Math.random()* Bag.length ); // gets random index from bag 

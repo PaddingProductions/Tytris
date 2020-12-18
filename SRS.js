@@ -15,7 +15,8 @@ const RotatingSystem = {
             });
         }
 
- 
+        console.log(kick_tests);
+
         for (let i=0; i<kick_tests.length; i++) {  // for all tests
             
             var startX = piece.x - (piece.map[0].length - 1)/2; // holds x and y used for rotation result

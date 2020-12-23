@@ -64,9 +64,7 @@ Shadow.prototype.check_blocks = function () { // checks for overlaps without req
 
             if (currX < 0 || currY < 0 || currX >= 10 || currY >= 20) return false; // if past boardars
             if (OccupationChart[currY][currX] == 1) return false; // if overlapping stack
-            
-
-            
+               
         }
     }
     return true;

@@ -15,6 +15,7 @@ class Piece {
 
         this.contact = false; //if touching floor
         
+        this.gravity = game.gravity;
         this.gravity_tick = 0; // gravity counter 
 
         this.lock_delay = 0; // lock delay
@@ -50,7 +51,7 @@ Piece.prototype.tick = function () {
     if (this.toBeDestroyed) return; 
 
     //Gravity falls
-    this.gravity_tick  += game.gravity;
+    this.gravity_tick  += this.gravity;
 
     if (this.contact == false)  {   // if the piece is contacting floor, enter lock delay phase, meaning no gravity
         if (this.gravity_tick >= game.gravity_tick_limit) { //if gravity tick's up
@@ -99,7 +100,7 @@ Piece.prototype.tick = function () {
         if (this.lock_delay == game.lock_limit) {
             this.lock();
         } else {
-            this.lock_delay ++;
+            this.lock_delay += this.gravity;
         }
     }  
 }
@@ -128,36 +129,46 @@ Piece.prototype.input_handle = function () {
 
 
 
-    if (commandKey[37] == true) {         // left
-
+    if (commandKey[37] == true) {        // left
+        
         if (this.ARM_direct == 1) {       //cancel ARM because you commanded it to move the other way
             this.ARM = false; 
             this.DAS_tick = 0; 
         } 
-        if (!this.ARM) {                  // only move if !ARM because you would move at 2x speed if so.
+        if (!this.ARM)                  // only move if !ARM because you would move at 2x speed if so.
             this.x --;
-        }
-        this.ARM_direct = -1;             // set ARM direct for when it begins
-    } 
+    }
+        
 
     if (commandKey[39] == true) {         //right
-
+        
         if (this.ARM_direct == -1) {  
             this.ARM = false; 
             this.DAS_tick = 0; 
         } 
-        if (!this.ARM) { 
+        if (!this.ARM) 
             this.x ++;
-        }
-        this.ARM_direct = 1; 
+    }
+    
+        
+    if (moveKey[40] == true) {
+        this.gravity = game.SDF* ((game.gravity > 0) * game.gravity + game.gravity == 0 * 1);
+    }  else {
+        this.gravity = game.gravity;
     }
 
 
     // note that movekey is true if command key is true, but converse and inverse of the statment isn't true
     if (moveKey[37] == true) {             // tick DAS if needed
+        
+        this.ARM_direct = -1;             // set ARM direct for when it begins
         this.DAS_tick ++;
+
     } else if (moveKey[39] == true) {
+
+        this.ARM_direct = 1; 
         this.DAS_tick ++;
+        
     } else {
         this.DAS_tick = 0;                //reset if keys is not pressed
     }

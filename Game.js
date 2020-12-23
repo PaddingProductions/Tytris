@@ -1,6 +1,6 @@
 
 var game  = {
-    gravity: 1,
+    gravity: 0,
     gravity_tick_limit: 10,
 
     lock_limit: 50, // lock delay frames
@@ -18,15 +18,31 @@ var game  = {
     // Handling
     DAS: 10, //Delayed auto shift, measured in frames. Frames required to begin auto repeat movement;
     ARR: 1, //Auto repeat rate, measured in frames per movement. How fast pieces travels during ARM;
-    SDF: -1, //Soft drop factor, measured in gravity tick increase per frame. -1 = infinite;
+    SDF: 6, //Soft drop factor, measured in gravity tick increase per frame. -1 = infinite;
 
     // Gameplay-affecting variables
     tick: function () {        
         
+        //Spawn piece if needed 
+        if (Current_piece == undefined) {
+            Current_piece = this.SpawnPiece(Previews[0]);
+
+            Shadow_piece = new Shadow(Current_piece);
+            Shadow_piece.tick(); 
+            
+            Previews.splice(0, 1);
+            game.update_preview();
+            console.log("spawned");
+        }
+
+        console.log("before tick", Current_piece.x);
 
         // tick piece
         Current_piece.tick();
         Shadow_piece.tick(); 
+
+        console.log("after tick");
+        if (Current_piece != undefined) console.log(Current_piece.x);
 
 
 
@@ -57,26 +73,20 @@ var game  = {
         }
 
 
-        //Spawn piece if needed 
-        if (Current_piece == undefined) {
-            Current_piece = this.SpawnPiece(Previews[0]);
-
-            Shadow_piece = new Shadow(Current_piece);
-            Shadow_piece.tick(); 
-            
-            Previews.splice(0, 1);
-            game.update_preview();
-        }
+        
 
         //
 
         //======Visuals=======
         // draw grid
         game.Field_draw();
-        // draw Piece
-        Shadow_piece.draw();
-        Current_piece.draw();
-        
+
+        if (Current_piece != undefined) {
+            // draw Piece
+            Shadow_piece.draw();
+            Current_piece.draw();
+        }
+
         // draw stack, independent block now
         for (let i=0; i<stack.length; i++) stack[i].draw();
 

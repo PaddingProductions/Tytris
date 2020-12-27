@@ -15,6 +15,8 @@ var game  = {
     canvasw: 700,
     canvash: 700,
 
+    garbage: 0, // garbage lines
+
     // Handling
     DAS: 10, //Delayed auto shift, measured in frames. Frames required to begin auto repeat movement;
     ARR: 1, //Auto repeat rate, measured in frames per movement. How fast pieces travels during ARM;
@@ -23,6 +25,53 @@ var game  = {
     // Gameplay-affecting variables
     tick: function () {        
         
+        if (game.garbage != 0) {                    // Give garbage, stack shifting        
+            for (let i=0; i<stack.length; i++) {    // update stack y axis of stack
+                stack[i].y -= game.garbage; 
+                
+                if (stack[i].y < 0) {               // if overloaded
+                    OverloadedStack.push(stack[i]); // push overloaded one into overloaded stack
+                    stack.splice(i,1);              // remove from normal stack
+                    i--;
+                }
+            }
+
+
+            var garbageSpace = Math.random() * 10;  // garbage space random.
+            for (let i=0; i<game.garbage; i++) {    // add garbage blocks to stack
+                for (let k=0; k<10; k++) {
+                    if (k != garbageSpace) stack.push(new Block(x, 20-i, "#dddddd"));
+                }
+            }
+
+            // must be done before inbound nodes because we must clear space for new overloads
+            // simply pad the overloaded nodes by garbage sent if there are overloads
+            if (OverloadedChart.length > 0) {
+                for (let i=0; i<game.garbage; i++) 
+                    OverloadedChart.push([0,0,0,0,0,0,0,0,0,0]);
+            }
+            for (let y=0; y<20; y++) { 
+                for (let x=0; x<10; x++) {          // for all inbound nodes
+                    if (OccupationChart[y][x] == 1) { // continue if not occupied
+
+                    OccupationChart[y][x] = 0;
+
+                    if (y - game.garbage > 0)       // decide if is overloaded, act as judged
+                        OverloadedChart[OverloadedChart.length + y - game.garbage][x] = 1;    // if overload
+                    else 
+                        OccupationChart[y - game.garbage][x] = 1;                // else 
+                    }
+                    if (y >= 20-game.garbage) {        // if current node is new garbage
+                        if (x != garbageSpace) OccuptationChart[y][x] == 1;    // set
+                    }
+                }
+            }
+            game.garbage = 0;
+            
+            
+
+        }
+
         //Spawn piece if needed 
         if (Current_piece == undefined) {
             Current_piece = this.SpawnPiece(Previews[0]);

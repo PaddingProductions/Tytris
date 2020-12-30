@@ -25,3 +25,20 @@ CreateLine = function (vertices , width, color) {
         scene.add( rect );
     }
 }
+
+
+Three_to_document_position = function (posx, posy) {
+    var camH = 1000*Math.tan(75/2 * Math.PI/180);                         // camera fov width
+    var camW = window.innerHeight/window.innerWidth * camH; // camera fov height
+    var Rposx = posx/camW;                                  // THREE.js posx in ratio form
+    var Rposy = posy/camH;                                  // THREE.js posy in ratio form
+    var Tposx = Rposx*window.innerWidth;                    // true on screen posx, THREE.js origin
+    var Tposy = Rposy*window.innerHeight;                   // true on screen posy, THREE.js origin
+    var outx = Tposx;                                       // origin change doesn't affect posx
+    var outy = window.innderHeight - Tposy;                 // origin change requires y change
+
+    return {
+        x: outx,
+        y: outy,
+    }
+}

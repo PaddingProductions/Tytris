@@ -18,6 +18,9 @@ var game  = {
     hold_box_offsetx: 100,
     hold_box_offsety: 500,
     
+    used_spin: false,
+    prevShape: undefined,
+
     garbage: 0, // garbage lines
 
     // Handling
@@ -42,60 +45,21 @@ var game  = {
         CreateLine(points, width , 0xffffff); // boarder of board
         scene.add(board); // board (is a black rect, you can't see it)
 
+        
+        clearInterval(SOURCE_LOOP);                     //halt old loop
+        game.LOOP = setInterval(game.tick, FRAME_RATE);  //begin new loop
+
     },
 
 
 
     // Gameplay-affecting variables
     tick: function () {        
-        /*
-        if (game.garbage != 0) {                    // Give garbage, stack shifting        
-            for (let i=0; i<stack.length; i++) {    // update stack y axis of stack
-                stack[i].y -= game.garbage; 
-                
-                if (stack[i].y < 0) {               // if overloaded
-                    OverloadedStack.push(stack[i]); // push overloaded one into overloaded stack
-                    stack.splice(i,1);              // remove from normal stack
-                    i--;
-                }
-            }
-
-
-            var garbageSpace = Math.random() * 10;  // garbage space random.
-            for (let i=0; i<game.garbage; i++) {    // add garbage blocks to stack
-                for (let k=0; k<10; k++) {
-                    if (k != garbageSpace) stack.push(new Block(x, 20-i, "#dddddd"));
-                }
-            }
-
-            // must be done before inbound nodes because we must clear space for new overloads
-            // simply pad the overloaded nodes by garbage sent if there are overloads
-            if (OverloadedChart.length > 0) {
-                for (let i=0; i<game.garbage; i++) 
-                    OverloadedChart.push([0,0,0,0,0,0,0,0,0,0]);
-            }
-            for (let y=0; y<20; y++) { 
-                for (let x=0; x<10; x++) {          // for all inbound nodes
-                    if (OccupationChart[y][x] == 1) { // continue if not occupied
-
-                    OccupationChart[y][x] = 0;
-
-                    if (y - game.garbage > 0)       // decide if is overloaded, act as judged
-                        OverloadedChart[OverloadedChart.length + y - game.garbage][x] = 1;    // if overload
-                    else 
-                        OccupationChart[y - game.garbage][x] = 1;                // else 
-                    }
-                    if (y >= 20-game.garbage) {        // if current node is new garbage
-                        if (x != garbageSpace) OccuptationChart[y][x] == 1;    // set
-                    }
-                }
-            }
-            game.garbage = 0;
-        }*/
+        
 
         //Spawn piece if needed 
         if (Current_piece == undefined) {
-            Current_piece = this.SpawnPiece(Previews[0]);
+            Current_piece = game.SpawnPiece(Previews[0]);
             
             Shadow_piece = new Shadow(Current_piece);
             Shadow_piece.tick(); 
@@ -103,14 +67,17 @@ var game  = {
             Previews.splice(0, 1);
             game.update_preview();
         }
+        game.prevShape = Current_piece.shape; // for t-spin checking
+
 
 
         // tick piece
-        Current_piece.tick();
+        Current_piece.tick(); 
         Shadow_piece.tick(); 
 
 
-
+        { // clear checker & stack shifter & stack clearer
+        
         var clears = []
         //check for clears
         for (let y =0; y < 20; y++) {
@@ -121,7 +88,7 @@ var game  = {
                 }
             }
         }
-                      
+                        
         for (let k=0; k<clears.length; k++) {  // remove and shift nodes
             for (let i=0; i<stack.length; i++) { 
 
@@ -143,7 +110,18 @@ var game  = {
                 OccupationChart[stack[i].y][stack[i].x] = 1;
             }
         }
+        if (game.used_spin) {
+            switch (game.prevShape) {
+                case "t": 
+                    if (clears.length == 1)  Combos.add("T-spin single", 1, 0xffcc00, Combos.p1_size)  // TSS
+                    if (clears.length == 2)  Combos.add("T-spin double", 1, 0xffcc00, Combos.p1_size)  // TSD
+                    if (clears.length == 3)  Combos.add("T-spin triple", 1, 0xffcc00, Combos.p1_size)  // TST
+                    break;
+            }
+        }
+        }
 
+        commandKey = {}; // clear as command keys only last one frame
 
         
 
@@ -176,20 +154,8 @@ var game  = {
 
         }
 
-    },
 
 
-
-
-
-
-    top_out_handler: function () {
-        stack = [];
-        reset_OccupationChart();
-        Bag = [];
-        Previews = [];
-        this.update_preview();
-        this.SpawnPiece();
     },
 
 
@@ -233,7 +199,7 @@ var game  = {
         }
         
         if (!piece.check_blocks()) { // if the stack overlapps with the spawning position, u probably died
-            game.top_out_handler(); 
+            clearInterval(game.LOOP);
         }
         
 

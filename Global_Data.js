@@ -4,15 +4,17 @@ var Shadow_piece;
 
 // Boarders, used to check if going out of bounds, is required for some kicks
 const BoarderIndent = 2;
+const FRAME_RATE = 30
 
 var holded_piece = {
     visual: undefined,
     piece: undefined,
-    generate_visual: function () {
+
+    generate_visual: function () {                  // note that the defined offset is the center of piece
         holded_piece.visual = game.SpawnPieceVisual( // hold piece
             holded_piece.piece,
-            game.hold_box_offsetx,
-            game.hold_box_offsety,
+            game.hold_box_offsetx - (MasterList[holded_piece.piece].centerX * game.block_size)/2,
+            game.hold_box_offsety - (MasterList[holded_piece.piece].centerY * game.block_size)/2,
         );
     },
     dispose_visual: function () {
@@ -23,6 +25,7 @@ var holded_piece = {
         }
     },
 };
+var Combos = new Combo (100, 300);
 
 OverloadedStack = []; // stack chart for blocks that passed the boarder
 OverloadedChart = []; // occupation chart for blocks that passed the boarder

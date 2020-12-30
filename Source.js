@@ -5,7 +5,7 @@ const renderer = new THREE.WebGLRenderer();
 renderer.setSize( window.innerWidth, window.innerHeight );
 document.body.appendChild( renderer.domElement );
 
-camera.position.z = 700;
+camera.position.z = 500;
 camera.position.x = window.innerWidth/2;
 camera.position.y = window.innerHeight/2;
 
@@ -16,15 +16,9 @@ game.update_preview();
 function MainLoop () {
     
     game.init();
-
-    if (Global_mode == "game") 
-        game.tick();
-    
-    
-    commandKey = {};
 }
 
-setInterval(MainLoop, 30);
+SOURCE_LOOP = setInterval(MainLoop, 30);
 
 document.addEventListener("keydown", keyDown);
 document.addEventListener("keyup", keyUp);

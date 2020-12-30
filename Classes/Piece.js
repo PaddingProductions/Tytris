@@ -48,6 +48,7 @@ Piece.prototype.tick = function () {
 
     this.input_handle();
 
+
     if (this.toBeDestroyed) return; 
 
     //Gravity falls
@@ -88,7 +89,6 @@ Piece.prototype.tick = function () {
 
     // updates block position again to account for contact/ boarder checks
     this.tick_blocks();
-
 
     // blocks check                                                                         
 
@@ -154,8 +154,9 @@ Piece.prototype.input_handle = function () {
             this.x ++;
     }
     
-        
-    if (moveKey[40] == true) {
+    // soft drop (up key)
+    if (moveKey[40] == true) { // soft drop
+
                                  // this segment just checks if grav is >0, if not it makes it 1
         this.gravity = game.SDF* ((game.gravity > 0) * game.gravity + game.gravity == 0 * 1);
         
@@ -165,8 +166,6 @@ Piece.prototype.input_handle = function () {
             }
             this.y--;
         }
-
-
     }  else {
         this.gravity = game.gravity;
     }
@@ -178,11 +177,13 @@ Piece.prototype.input_handle = function () {
         this.ARM_direct = -1;             // set ARM direct for when it begins
         this.DAS_tick ++;
 
+        game.used_spin = false;
     } else if (moveKey[39] == true) {
 
         this.ARM_direct = 1; 
         this.DAS_tick ++;
-        
+
+        game.used_spin = false;
     } else {
         this.DAS_tick = 0;                //reset if keys is not pressed
     }
@@ -230,6 +231,8 @@ Piece.prototype.input_handle = function () {
         if (this.rotation == "L") newRotation = "O";
 
         RotatingSystem.rotate(this, newRotation);
+
+        game.used_spin = true;
     } 
     if (commandKey[90] == true) {  // z, ccw rotation 
         var newRotation;
@@ -240,6 +243,8 @@ Piece.prototype.input_handle = function () {
         if (this.rotation == "R") newRotation = "O";
 
         RotatingSystem.rotate(this, newRotation);
+
+        game.used_spin = true;
     } 
     this.tick_blocks();
 

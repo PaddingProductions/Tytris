@@ -11,6 +11,12 @@ class Block {
 
         // if touching thing
         this.contact = false;
+
+        const geometry = new THREE.PlaneGeometry( game.block_size, game.block_size );
+        const material = new THREE.MeshBasicMaterial( {color: this.color, side: THREE.DoubleSide} );
+        this.visual = new THREE.Mesh( geometry, material );
+
+        scene.add( this.visual );
     }
 }
 
@@ -93,15 +99,21 @@ Block.prototype.lock = function () {
 
 
 
+Block.prototype.update_visual = function () {
+
+    this.visual.position.x = this.x * game.block_size + game.board_offsetx + game.block_size/2;
+    this.visual.position.y = (19-this.y) * game.block_size + game.board_offsety + game.block_size/2;
+
+    return;
+} 
 
 
-Block.prototype.draw = function () {
 
-    ctx.save();
-    ctx.translate(game.fieldx, game.fieldy);
 
-    ctx.fillStyle = this.color;
-    ctx.fillRect(this.x*game.block_size, this.y*game.block_size, game.block_size, game.block_size);
+Block.prototype.dispose_visual = function () {
 
-    ctx.restore();
+    this.visual.geometry.dispose();
+    this.visual.material.dispose();
+
+    scene.remove(this.visual);
 }

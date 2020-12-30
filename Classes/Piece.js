@@ -28,10 +28,10 @@ class Piece {
         this.ARM_direct;   // a variable to track direction of ARM
 
         //sets up the default map
-        this.add_child(new Block(x,y,color));
-        this.add_child(new Block(x,y,color));
-        this.add_child(new Block(x,y,color));
-        this.add_child(new Block(x,y,color));
+        this.children.push(new Block(x,y,color));
+        this.children.push(new Block(x,y,color));
+        this.children.push(new Block(x,y,color));
+        this.children.push(new Block(x,y,color));
 
         
         this.map = this.type["O"];
@@ -118,8 +118,12 @@ Piece.prototype.input_handle = function () {
 
     if (commandKey[67] == true) {        // hold
         if (!this.hold_limit)  {
-            newType = Hold;
-            Hold = Current_piece.shape;
+            newType = holded_piece.piece;
+            holded_piece.piece = Current_piece.shape;
+
+            if (holded_piece.visual != undefined) holded_piece.dispose_visual();  
+            Shadow_piece.dispose_visual(); // removes THREE element to prevent overlap
+            Current_piece.dispose_visual();
 
             Current_piece = game.SpawnPiece(newType);
             Shadow_piece = new Shadow(Current_piece);
@@ -152,7 +156,17 @@ Piece.prototype.input_handle = function () {
     
         
     if (moveKey[40] == true) {
+                                 // this segment just checks if grav is >0, if not it makes it 1
         this.gravity = game.SDF* ((game.gravity > 0) * game.gravity + game.gravity == 0 * 1);
+        
+        if (game.SDF = -1) {     /// if infinite sdf, find lowest possible location
+            while (this.check_blocks()) {  
+                this.y++;
+            }
+            this.y--;
+        }
+
+
     }  else {
         this.gravity = game.gravity;
     }
@@ -251,15 +265,6 @@ Piece.prototype.input_handle = function () {
 
 
 
-Piece.prototype.draw = function () {
-    
-    for (let i=0; i<this.children.length; i++) {
-        this.children[i].draw();
-    }
-}
-
-
-
 
 
 
@@ -267,7 +272,7 @@ Piece.prototype.draw = function () {
 
 Piece.prototype.lock = function () {
     // add lock delay sumtime
-
+    
     // lock all block
     for (let i=0; i<this.children.length; i++) {
         this.children[i].lock();
@@ -290,10 +295,10 @@ Piece.prototype.tick_blocks = function () {
     cnt = 0;
     for (let y =0; y<this.map.length; y++) {
         for (let x =0; x<this.map[y].length; x++) {
-
             if (this.map[y][x] == 1) { //sets the positions of the blocks to the correct ones
-                this.children[cnt].x = (this.x - this.type.centerX) + x; // the equation is quite funky, but draw it out
-                this.children[cnt].y = (this.y - this.type.centerY) + y;
+
+                this.children[cnt].x = (this.x - this.type.centerX) + x;
+                this.children[cnt].y = (this.y - this.type.centerY) + y; 
 
                 cnt++;
             }
@@ -303,17 +308,6 @@ Piece.prototype.tick_blocks = function () {
 
 
 
-
-
-
-
-
-
-Piece.prototype.add_child = function (child) {
-
-    this.children.push(child);
-    return child;
-}
 
 
 
@@ -340,4 +334,22 @@ Piece.prototype.check_blocks = function () { // checks for overlaps without requ
         }
     }
     return true;
+}
+
+
+
+
+
+Piece.prototype.update_visual = function () {
+    for (let i=0; i<this.children.length; i++)  // calculate position of shadow piece 
+        this.children[i].update_visual();
+}
+
+
+
+
+Piece.prototype.dispose_visual = function () {
+    for (let i=0; i<4; i++) {
+        this.children[i].dispose_visual();
+    }
 }

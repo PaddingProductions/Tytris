@@ -1,18 +1,16 @@
-const canvas = document.getElementById("main canvas");
-const ctx = canvas.getContext("2d");
+const app = new PIXI.Application({
+    width: window.innerWidth, height: window.innerHeight, backgroundColor: 0x000000, resolution: window.devicePixelRatio || 1,
+});document.body.appendChild(app.view);
 
-game.update_preview();
+PIXI.settings.SORTABLE_CHILDREN =true;
 
 function MainLoop () {
     
-    if (Global_mode == "game") 
-        game.tick();
+    game.init();
     
-    
-    commandKey = {};
 }
 
-setInterval(MainLoop, 17);
+SOURCE_LOOP = setInterval(MainLoop, game.FRAME_RATE);
 
 document.addEventListener("keydown", keyDown);
 document.addEventListener("keyup", keyUp);

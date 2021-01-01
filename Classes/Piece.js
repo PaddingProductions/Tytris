@@ -28,12 +28,11 @@ class Piece {
         this.ARM_direct;   // a variable to track direction of ARM
 
         //sets up the default map
-        this.add_child(new Block(x,y,color));
-        this.add_child(new Block(x,y,color));
-        this.add_child(new Block(x,y,color));
-        this.add_child(new Block(x,y,color));
+        this.children.push(new Block(x,y,color, 1));
+        this.children.push(new Block(x,y,color, 1));
+        this.children.push(new Block(x,y,color, 1));
+        this.children.push(new Block(x,y,color, 1));
 
-        
         this.map = this.type["O"];
         
         this.tick_blocks(); // creates child blocks
@@ -48,7 +47,9 @@ Piece.prototype.tick = function () {
 
     this.input_handle();
 
-    if (this.toBeDestroyed) return; 
+    if (this.toBeDestroyed) {
+        return;
+    } 
 
     //Gravity falls
     this.gravity_tick  += this.gravity;
@@ -118,10 +119,15 @@ Piece.prototype.input_handle = function () {
 
     if (commandKey[67] == true) {        // hold
         if (!this.hold_limit)  {
-            newType = Hold;
-            Hold = Current_piece.shape;
+            newType = Hold.piece;
+            Hold.piece = Current_piece.shape;
 
-            Current_piece = game.SpawnPiece(newType);
+            Current_piece.Destroy_Display();            // remove display
+            Shadow_piece.Destroy_Display();
+            Hold.Destroy_Display();
+
+            Hold.Create_Display();
+            Current_piece = game.SpawnPiece(newType);   // remove and add new piece
             Shadow_piece = new Shadow(Current_piece);
             Current_piece.hold_limit = true;
         }
@@ -251,12 +257,6 @@ Piece.prototype.input_handle = function () {
 
 
 
-Piece.prototype.draw = function () {
-    
-    for (let i=0; i<this.children.length; i++) {
-        this.children[i].draw();
-    }
-}
 
 
 
@@ -267,7 +267,7 @@ Piece.prototype.draw = function () {
 
 Piece.prototype.lock = function () {
     // add lock delay sumtime
-
+    
     // lock all block
     for (let i=0; i<this.children.length; i++) {
         this.children[i].lock();
@@ -309,19 +309,6 @@ Piece.prototype.tick_blocks = function () {
 
 
 
-Piece.prototype.add_child = function (child) {
-
-    this.children.push(child);
-    return child;
-}
-
-
-
-
-
-
-
-
 
 
 Piece.prototype.check_blocks = function () { // checks for overlaps without requireing to tick nodes beforehand
@@ -340,4 +327,23 @@ Piece.prototype.check_blocks = function () { // checks for overlaps without requ
         }
     }
     return true;
+}
+
+
+
+
+
+Piece.prototype.Update_Display = function () {
+    for (let i=0; i<this.children.length; i++) {
+
+        this.children[i].display.position.x = this.children[i].x * game.block_size + Display.boardx;
+        this.children[i].display.position.y = this.children[i].y * game.block_size + Display.boardy;
+    }
+}
+
+Piece.prototype.Destroy_Display = function () {
+    for (let i=0; i<this.children.length; i++) {
+
+        this.children[i].display.destroy();
+    }
 }

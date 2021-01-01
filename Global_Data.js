@@ -5,11 +5,9 @@ var Shadow_piece;
 // Boarders, used to check if going out of bounds, is required for some kicks
 const BoarderIndent = 2;
 
-const preview_box_offsetx = 350;
-const preview_box_offsety = 0;
 
-const hold_box_offsetx = -150;
-const hold_box_offsety = 0;
+var Display;          // the board, but technically "game field"
+
 
 
 OverloadedStack = []; // stack chart for blocks that passed the boarder
@@ -86,7 +84,7 @@ var MasterList = {
 
         centerX: 1,
         centerY: 1,
-        color: '#a460d1',
+        color: 0xa460d1,
     },
     "l": {
         'O': [
@@ -113,7 +111,7 @@ var MasterList = {
 
         centerX: 1,
         centerY: 1,
-        color: '#e68c2c',
+        color: 0xe68c2c,
 
     },
     "j": {
@@ -141,7 +139,7 @@ var MasterList = {
 
         centerX: 1,
         centerY: 1,
-        color: '#4650bd',
+        color: 0x4650bd,
 
     },
     "s": {
@@ -169,7 +167,7 @@ var MasterList = {
 
         centerX: 1,
         centerY: 1,
-        color: "#3ff50c",
+        color: 0x3ff50c,
     },
     "z": {
         'O': [
@@ -196,7 +194,7 @@ var MasterList = {
 
         centerX: 1,
         centerY: 1,
-        color: "#ff0048",
+        color: 0xff0048,
 
     },
     "i": {
@@ -232,7 +230,7 @@ var MasterList = {
 
         centerX: 2,
         centerY: 2,
-        color: "#0ce9f5",
+        color: 0x0ce9f5,
     },
     "o": {
         'O': [
@@ -259,7 +257,7 @@ var MasterList = {
 
         centerX: 1,
         centerY: 1,
-        color: "#ffe414",
+        color: 0xffe414,
     },
     
 }
@@ -349,6 +347,5 @@ Kick_Table["s"] = Kick_Table["T,S,Z,L,J"];
 Kick_Table["z"] = Kick_Table["T,S,Z,L,J"];
 
 
-var Previews = []; // holds the five previews
-var Bag = []; // 7-bag system
-var Hold = undefined;
+var Preview;
+var Hold;

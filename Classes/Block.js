@@ -1,16 +1,18 @@
 class Block {
 
-    constructor (x, y, color) {
+    constructor (x, y, color, z) {
         //position
         this.x = x;
         this.y = y; 
 
         //rendering
-        //this.color = color;
         this.color = color;
 
         // if touching thing
         this.contact = false;
+
+        this.display = Display.add_block(this);
+        this.display.zIndex = z;
     }
 }
 
@@ -92,16 +94,7 @@ Block.prototype.lock = function () {
 
 
 
-
-
-
-Block.prototype.draw = function () {
-
-    ctx.save();
-    ctx.translate(game.fieldx, game.fieldy);
-
-    ctx.fillStyle = this.color;
-    ctx.fillRect(this.x*game.block_size, this.y*game.block_size, game.block_size, game.block_size);
-
-    ctx.restore();
+Block.prototype.Update_Display = function () {
+    this.display.position.x = this.x * game.block_size + Display.boardx;
+    this.display.position.y = this.y * game.block_size + Display.boardy;
 }

@@ -5,27 +5,29 @@
     <meta name="viewport" content="width=device-width">
     <title>Tytris</title>
     <style>
-      canvas {background: #eee; display: block; margin: 0 auto; }
-    </style>
+			body { margin: 0; }
+		</style>
   </head>
   <body>
 
-    <canvas id='main canvas' width="700" height="700"></canvas>
-
-
-	<script src="https://threejs.org/build/three.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/5.1.3/pixi.min.js"></script>
 
 	<script src="Classes/Block.js"></script>	
 	<script src="Classes/Piece.js"></script>	
-	<script src="Classes/Shadow.js"></script>	
-    <script src="Event_Handdlers.js"></script>	
+  <script src="Classes/Shadow.js"></script>	
+  <script src="Classes/Previews.js"></script>	
+  <script src="Classes/Hold.js"></script>	
+
+	<script src="Display/Display.js"></script>	
+  <script src="Display/Update.js"></script>	
+  
+  <script src="Event_Handdlers.js"></script>	
 	<script src="SRS.js"></script>	
 	<script src="Global_Data.js"></script>	
-    <script src="Game.js"></script>	
+  <script src="Game.js"></script>	
 
-	
+
 	<script src="Source.js"></script>	
-
 
   </body>
 </html>

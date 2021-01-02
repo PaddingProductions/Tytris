@@ -217,7 +217,9 @@ var game  = {
         resetChart();
         stack = [];
         game.over = true;
-
+        commandKey = {};
+        moveKey = {};
+        
         clearInterval(game.LOOP);
         SOURCE_LOOP = setInterval(Source, FRAME_RATE);
     },

@@ -10,14 +10,34 @@ var Display;          // the board, but technically "game field"
 
 
 
-OverloadedStack = []; // stack chart for blocks that passed the boarder
-OverloadedChart = []; // occupation chart for blocks that passed the boarder
+OverloadChart = []; // occupation chart for blocks that past the boarder
 
 
 OccupationChart = []; // It displays ur stack for the computation part, marks as 1 if occupied
 
+getChart = function (x,y) {
+    if (y < 0) 
+        return OverloadChart[OverloadChart.length - (Math.abs(y))][x];
+    return OccupationChart[y][x];
+} 
+
+setChart = function (x,y, val) {
+    if (y < 0) 
+        return OverloadChart[OverloadChart.length - (Math.abs(y))][x] = val;
+    return OccupationChart[y][x] = val;
+}
+
+resizeOverload = function (newSize) {
+
+    while(newSize > OverloadChart.length)      // resize overload
+        OverloadChart.push([0,0,0,0,0,0,0,0,0,0]);
+
+    return;
+}
+
+
 // a function that is very,very niche. but it has it's uses
-function reset_OccupationChart () {
+function resetChart () {
     OccupationChart = [
 
         [0,0,0,0,0,0,0,0,0,0],
@@ -42,13 +62,15 @@ function reset_OccupationChart () {
         [0,0,0,0,0,0,0,0,0,0],
 
     ];
+    OverloadChart = [ 
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0],
+    ]; 
     return;
-} reset_OccupationChart();
+} resetChart();
 
 // holds blocks, for drawing and other future purposes :thinking:
 var stack = [];
-// for debugging purposes, allows you see the custom-made stack
-for (let y=0; y<20; y++) for (let x=0; x<10; x++) if (OccupationChart[y][x] == 1) stack.push(new Block(x,y));
 
 // inputs
 var moveKey = {};
@@ -349,3 +371,5 @@ Kick_Table["z"] = Kick_Table["T,S,Z,L,J"];
 
 var Preview;
 var Hold;
+var Current_piece;
+var Shadow_piece;

@@ -257,14 +257,6 @@ Piece.prototype.input_handle = function () {
 
 
 
-
-
-
-
-
-
-
-
 Piece.prototype.lock = function () {
     // add lock delay sumtime
     
@@ -272,8 +264,11 @@ Piece.prototype.lock = function () {
     for (let i=0; i<this.children.length; i++) {
         this.children[i].lock();
     }
+    if (this.y <= -1) game.top_out_handler();
+
     this.toBeDestroyed = true;
     Current_piece = undefined; // goodbye world
+
 
     return;
 }
@@ -321,9 +316,9 @@ Piece.prototype.check_blocks = function () { // checks for overlaps without requ
             var currX = this.x + x - this.type.centerX; 
             var currY = this.y + y - this.type.centerY; 
 
-            if (currX < 0 || currY < 0 || currX >= 10 || currY >= 20) return false; // if past boardars
-            if (OccupationChart[currY][currX] == 1) return false; // if overlapping stack
-            
+            if (currX < 0 || currX >= 10 || currY >= 20) return false; // if past boardars
+            if (getChart(currX,currY) == 1) return false; // if overlapping stack
+
         }
     }
     return true;

@@ -28,7 +28,7 @@ Block.prototype.if_contact = function () {
     // the ID is to speed up checking, string comparision is not that fastest
     var return_message = [];
 
-
+    let x = this.x;
     
     if (this.x < 0) {               // checks left wall contact
         return_message.push({
@@ -48,14 +48,14 @@ Block.prototype.if_contact = function () {
 
     if (this.y < 19 && this.x <10 && this.x >=0)   // makes sure that it doesn't go out of bounds as this is the stack chart
     {           
-    if (OccupationChart[this.y+1][this.x] == 1) {   // checks stack contact downwards, meaning begin lock delay
+    if (getChart(this.x,this.y+1) == 1) {   // checks stack contact downwards, meaning begin lock delay
         
         return_message.push({
             message: "stack contact",
             ID: 1,
         });
     }
-    if (OccupationChart[this.y][this.x] == 1) {
+    if (getChart(this.x,this.y) == 1) {
 
         return_message.push({
             message: "overlap stack, input shiftx request invalid",
@@ -83,7 +83,7 @@ Block.prototype.if_contact = function () {
 
 Block.prototype.lock = function () {    
     // add block as "occupied"
-    OccupationChart[this.y][this.x] = 1;
+    setChart(this.x,this.y,1);
 
     //change into a entity for drawing;
     stack.push(this);

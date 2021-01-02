@@ -56,8 +56,8 @@ const RotatingSystem = {
                 if (map[y][x] == 0) continue; // no need to process empty nodes
 
 
-                if (currX < 0 || currY < 0 || currX >= 10 || currY >= 20) return false; // if past boardars
-                if (OccupationChart[currY][currX] == 1) return false; // if overlapping stack
+                if (currX < 0 || currX >= 10 || currY >= 20) return false; // if past boardars
+                if (getChart(currX,currY) == 1) return false; // if overlapping stack
                 
 
 

@@ -81,8 +81,8 @@ Shadow.prototype.check_blocks = function () { // checks for overlaps without req
             var currX = this.x + x - this.type.centerX; 
             var currY = this.y + y - this.type.centerY; 
 
-            if (currX < 0 || currY < 0 || currX >= 10 || currY >= 20) return false; // if past boardars
-            if (OccupationChart[currY][currX] == 1) return false; // if overlapping stack
+            if (currX < 0 || currX >= 10 || currY >= 20) return false; // if past boardars
+            if (getChart(currX,currY) == 1) return false; // if overlapping stack
                
         }
     }

@@ -2,7 +2,7 @@ class _Preview {
     constructor (x,y) {
 
         this.previews = [];
-        this.bag = [];
+        this.bag = ["l","j","s","z","o","i","t"];
         
         this.update_preview();
 

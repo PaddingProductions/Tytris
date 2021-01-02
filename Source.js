@@ -2,7 +2,7 @@ const app = new PIXI.Application({
     width: window.innerWidth, height: window.innerHeight, backgroundColor: 0x000000, resolution: window.devicePixelRatio || 1,
 });document.body.appendChild(app.view);
 
-var FRAME_RATE = 33;
+var FRAME_RATE = 20;
 
 PIXI.settings.SORTABLE_CHILDREN =true;
 

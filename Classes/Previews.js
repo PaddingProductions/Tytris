@@ -18,14 +18,15 @@ class _Preview {
         for (let i=0; i<this.previews.length; i++) {
             Display.add_piece(
                 MasterList[this.previews[i]],
-                 0, i * 4 * game.block_size, // indent by 4 blocks cuz idk
+                 0, i * 4 * Game.block_size, // indent by 4 blocks cuz idk
                  this.container
             );
         }
     }
 }
 
-_Preview.prototype.Update_Display = function () { 
+_Preview.prototype.Update_Display = function () {   // note that this edits the original not create 
+                                                    // a new graphic
 
     for (let i=0; i<this.previews.length; i++) {            // for all previews
         curr_type = MasterList[this.previews[i]];
@@ -39,14 +40,14 @@ _Preview.prototype.Update_Display = function () {
                 // NOTE: each children are blocks not pieces, so this.
                 let curr = this.container.children[cnt + 4*i];  
 
-                curr.position.x = x * game.block_size;
-                curr.position.y = y * game.block_size + i * 4 * game.block_size;
+                curr.position.x = x * Game.block_size;
+                curr.position.y = y * Game.block_size + i * 4 * Game.block_size;
 
                 curr.clear()                          // remove prev rect to change color
                 curr.beginFill(curr_type.color);
-                curr.lineStyle(2, 0x4444444);     
+                curr.lineStyle(Game.Block_style.lineWidth, 0x4444444);     
 
-                curr.drawRect(0, 0, game.block_size, game.block_size);  
+                curr.drawRect(0, 0, Game.block_size, Game.block_size);  
 
                 cnt ++;
             }

@@ -10,6 +10,6 @@ Update_Display = function () {
         Shadow_piece.Update_Display();
 
     Preview.Update_Display();
-    
+    SideLineDisplay.Update_Display();
     return;
 }

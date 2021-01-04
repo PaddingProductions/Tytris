@@ -1,5 +1,5 @@
 
-var game  = {
+var Game  = {
 
     garbage: 0,
 
@@ -12,17 +12,25 @@ var game  = {
 
     block_size: 25,
 
-    boardx: 200,
-    boardy: 100,
+    boardX: 200,
+    boardY: 100,
 
-    holdx: 100,
-    holdy: 100,
+    holdX: 50,
+    holdY: 100,
 
-    previewx: 500,
-    previewy: 100,
+    previewX: 500,
+    previewY: 100,
+
+    SideLineDisplayX: 25,
+    SideLineDisplayY: 200,
 
     garbage: 0, // garbage lines
 
+
+    Block_style: {
+        lineWidth: 2,
+    },
+    
     // Handling
     DAS: 10, //Delayed auto shift, measured in frames. Frames required to begin auto repeat movement;
     ARR: 1, //Auto repeat rate, measured in frames per movement. How fast pieces travels during ARM;
@@ -31,27 +39,29 @@ var game  = {
 
     // begins the interval, as well as setting containers
     init: function () {
-        game.over = false;
+        Game.over = false;
 
-        Display = new _Display(game.boardx,game.boardy);
+        Display = new _Display(Game.boardX,Game.boardY);
 
-        Hold = new _Hold(game.holdx, game.holdy);
-        Preview = new _Preview(game.previewx, game.previewy);
+        Hold = new _Hold(Game.holdX, Game.holdY);
+        Preview = new _Preview(Game.previewX, Game.previewY);
+        SideLineDisplay = new _SideLineDisplay(Game.SideLineDisplayX, Game.SideLineDisplayY);
+
 
         clearInterval(SOURCE_LOOP);
-        game.LOOP = setInterval(game.tick, FRAME_RATE);
+        Game.LOOP = setInterval(Game.tick, FRAME_RATE);
     },
 
     // Gameplay-affecting variables
     tick: function () {        
         
         // garbage
-        if (game.garbage > 0) game.Garbage_Handler();
+        if (Game.garbage > 0) Game.Garbage_Handler();
 
 
         //Spawn piece if needed 
         if (Current_piece == undefined) {
-            Current_piece = game.SpawnPiece(Preview.previews[0]);
+            Current_piece = Game.SpawnPiece(Preview.previews[0]);
 
             Shadow_piece = new Shadow(Current_piece);
             Shadow_piece.tick(); 
@@ -63,13 +73,14 @@ var game  = {
 
         // tick piece
         Current_piece.tick();
-        if (game.over) return;
+        if (Game.over) return;
         Shadow_piece.tick(); 
 
-        game.Clear_Handler();
-
+        Game.Clear_Handler();
         
 
+        if (Current_piece.toBeDestroyed) Current_piece = undefined;
+        if (Shadow_piece.toBeDestroyed) Shadow_piece = undefined;
         //======Visuals=======
         Update_Display();
 
@@ -86,7 +97,7 @@ var game  = {
 
 
         for (let i=0; i<stack.length; i++)                       // shift lines up
-            stack[i].y -= game.garbage; 
+            stack[i].y -= Game.garbage; 
         
         
 
@@ -107,17 +118,17 @@ var game  = {
 
         const garbage_hole = Math.floor(Math.random()*10);         // empty space in garbage
 
-        for (let y = 19; y > 19-game.garbage; y--) {             // climbs upwards
+        for (let y = 19; y > 19-Game.garbage; y--) {             // climbs upwards
             for (let x =0; x < 10; x++)  {
 
-                if (x != garbage_hole && y > 19-game.garbage) {  // add garbage
+                if (x != garbage_hole && y > 19-Game.garbage) {  // add garbage
                     stack.push(new Block(x,y,0xaaaaaa,1));
                     setChart(x,y,1);
                 }
             }
         }
 
-        game.garbage = 0;
+        Game.garbage = 0;
         return;
     },
 
@@ -160,10 +171,42 @@ var game  = {
             }
         }
 
-
+        Game.Spin_Detector(clears.length);
         return;
     },
 
+
+
+    Spin_Detector: function (clears) {
+
+    
+        let isTSpin = false;
+        
+        // 3 corner checker
+        let dx = [-1,-1,1,1]
+        let dy = [-1,1,-1,1]
+        let cnt =0;
+
+        for (let i=0; i<4; i++) 
+            if (dx[i] >= 0 && dx[i] < 10 && dy < 20)
+                if (getChart(Current_piece.x+dx[i],Current_piece.y+dy[i]))
+                    cnt ++
+        isTSpin = cnt >= 3;
+
+
+
+        if (isTSpin && clears == 1) {
+            SideLineDisplay.Text(SideLineDisplay.priority1,"T-spin Single",-1);
+        }
+
+        if (isTSpin && clears == 2) {
+            SideLineDisplay.Text(SideLineDisplay.priority1,"T-spin Double",-1);
+        }
+
+        if (isTSpin && clears == 3) {
+            SideLineDisplay.Text(SideLineDisplay.priority1,"T-spin Triple",-1);
+        }
+    },
 
     SpawnPiece: function (type) {
 
@@ -194,14 +237,14 @@ var game  = {
                 piece = new Piece (4, -1, 'i', MasterList[type].color);
                 break;
             case undefined:
-                piece = game.SpawnPiece(Preview.previews[0]);
+                piece = Game.SpawnPiece(Preview.previews[0]);
                 Preview.previews.splice(0,1);
                 Preview.update_preview();
                 return piece;
         }
         
         if (!piece.check_blocks()) { // if the stack overlapps with the spawning position, u probably died
-            game.top_out_handler(); 
+            Game.top_out_handler(); 
         }
         
 
@@ -216,11 +259,11 @@ var game  = {
         Shadow_piece = undefined;
         resetChart();
         stack = [];
-        game.over = true;
+        Game.over = true;
         commandKey = {};
         moveKey = {};
         
-        clearInterval(game.LOOP);
+        clearInterval(Game.LOOP);
         SOURCE_LOOP = setInterval(Source, FRAME_RATE);
     },
 }

@@ -9,6 +9,7 @@ class Shadow {
         this.type = MasterList[this.shape];
         this.children = [];
         this.color = 0xdddddd;
+        this.toBeDestroyed = false;
         //sets up the default map
         this.children.push(new Block(this.x,this.y,this.color, 0));
         this.children.push(new Block(this.x,this.y,this.color, 0));
@@ -20,9 +21,10 @@ class Shadow {
 
 Shadow.prototype.tick = function () {
 
-    if (Current_piece == undefined) { // if key is placed
+    if (Current_piece.toBeDestroyed) { // if key is placed
         this.Destroy_Display();
-        Shadow_piece = undefined;
+        this.toBeDestroyed = true;
+        return;
     }
 
     this.x = this.master.x;
@@ -95,8 +97,8 @@ Shadow.prototype.check_blocks = function () { // checks for overlaps without req
 Shadow.prototype.Update_Display = function () {
     for (let i=0; i<this.children.length; i++) {
 
-        this.children[i].display.position.x = this.children[i].x * game.block_size + Display.boardx;
-        this.children[i].display.position.y = this.children[i].y * game.block_size + Display.boardy;
+        this.children[i].display.position.x = this.children[i].x * Game.block_size + Display.boardx;
+        this.children[i].display.position.y = this.children[i].y * Game.block_size + Display.boardy;
     }
 }
 

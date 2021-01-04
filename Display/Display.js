@@ -12,9 +12,10 @@ class _Display {
         
         this.board.beginFill(0x000000);    
         this.board.lineStyle(10, 0xffffff);     
-        this.board.drawRect(0 -10, 0 -10, 10*game.block_size +10*2, 20*game.block_size +10*2);  
+        this.board.drawRect(0 -10, 0 -10, 10*Game.block_size +10*2, 20*Game.block_size +10*2);  
         
-        this.container.addChild(this.board)     
+        this.container.addChild(this.board);
+        app.stage.addChild(this.container);    
     }
 }
 
@@ -23,14 +24,14 @@ class _Display {
 _Display.prototype.add_block = function(block)  {
 
     let graphic = new PIXI.Graphics();
-    
-    graphic.position.x = block.x * game.block_size + this.boardx;
-    graphic.position.y = block.y * game.block_size + this.boardy;
+
+    graphic.position.x = block.x * Game.block_size + this.boardx;
+    graphic.position.y = block.y * Game.block_size + this.boardy;
 
 
     graphic.beginFill(block.color);    
-    graphic.lineStyle(1, 0x4444444);     // linewidth, color
-    graphic.drawRect(0, 0, game.block_size, game.block_size);  
+    graphic.lineStyle(Game.Block_style.lineWidth, 0x4444444);     // linewidth, color
+    graphic.drawRect(0, 0, Game.block_size, Game.block_size);  
 
     app.stage.addChild(graphic);
     this.container.addChild(graphic);
@@ -48,12 +49,12 @@ _Display.prototype.add_piece = function(type, offsetx, offsety, container) {
 
             let graphic = new PIXI.Graphics();
             
-            graphic.position.x = x*game.block_size + offsetx;
-            graphic.position.y = y*game.block_size + offsety;
+            graphic.position.x = x*Game.block_size + offsetx;
+            graphic.position.y = y*Game.block_size + offsety;
             
             graphic.beginFill(type.color);    
-            graphic.lineStyle(1, 0x4444444);     // linewidth, color
-            graphic.drawRect(0, 0, game.block_size, game.block_size);  
+            graphic.lineStyle(Game.Block_style.lineWidth, 0x4444444);     // linewidth, color
+            graphic.drawRect(0, 0, Game.block_size, Game.block_size);  
 
             app.stage.addChild(graphic);
             container.addChild(graphic);        

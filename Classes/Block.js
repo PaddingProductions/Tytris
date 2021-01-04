@@ -95,6 +95,6 @@ Block.prototype.lock = function () {
 
 
 Block.prototype.Update_Display = function () {
-    this.display.position.x = this.x * game.block_size + Display.boardx;
-    this.display.position.y = this.y * game.block_size + Display.boardy;
+    this.display.position.x = this.x * Game.block_size + Display.boardx;
+    this.display.position.y = this.y * Game.block_size + Display.boardy;
 }

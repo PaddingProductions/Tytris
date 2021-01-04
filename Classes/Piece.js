@@ -15,7 +15,7 @@ class Piece {
 
         this.contact = false; //if touching floor
         
-        this.gravity = game.gravity;
+        this.gravity = Game.gravity;
         this.gravity_tick = 0; // gravity counter 
 
         this.lock_delay = 0; // lock delay
@@ -55,7 +55,7 @@ Piece.prototype.tick = function () {
     this.gravity_tick  += this.gravity;
 
     if (this.contact == false)  {   // if the piece is contacting floor, enter lock delay phase, meaning no gravity
-        if (this.gravity_tick >= game.gravity_tick_limit) { //if gravity tick's up
+        if (this.gravity_tick >= Game.gravity_tick_limit) { //if gravity tick's up
             this.gravity_tick = 0;
             this.y ++;
         }
@@ -95,10 +95,10 @@ Piece.prototype.tick = function () {
 
 
     if (this.contact) { // locks if needed
-        if (this.lock_reset_counter == game.lock_reset_limit) {
+        if (this.lock_reset_counter == Game.lock_reset_limit) {
             this.lock();
         }
-        if (this.lock_delay == game.lock_limit) {
+        if (this.lock_delay == Game.lock_limit) {
             this.lock();
         } else {
             this.lock_delay += this.gravity;
@@ -127,7 +127,7 @@ Piece.prototype.input_handle = function () {
             Hold.Destroy_Display();
 
             Hold.Create_Display();
-            Current_piece = game.SpawnPiece(newType);   // remove and add new piece
+            Current_piece = Game.SpawnPiece(newType);   // remove and add new piece
             Shadow_piece = new Shadow(Current_piece);
             Current_piece.hold_limit = true;
         }
@@ -158,9 +158,9 @@ Piece.prototype.input_handle = function () {
     
         
     if (moveKey[40] == true) {
-        this.gravity = game.SDF* ((game.gravity > 0) * game.gravity + game.gravity == 0 * 1);
+        this.gravity = Game.SDF* ((Game.gravity > 0) * Game.gravity + Game.gravity == 0 * 1);
     }  else {
-        this.gravity = game.gravity;
+        this.gravity = Game.gravity;
     }
 
 
@@ -180,13 +180,13 @@ Piece.prototype.input_handle = function () {
     }
 
     
-    if (this.DAS_tick == game.DAS) {       // if DAS time up, begin ARM
+    if (this.DAS_tick == Game.DAS) {       // if DAS time up, begin ARM
         this.ARM = true;
         this.DAS_tick = 0;
     }
 
     if (this.ARM) {                         //ARM; auto repeat movement
-        if (this.ARR_tick == game.ARR) {    // if ARR tick is up
+        if (this.ARR_tick == Game.ARR) {    // if ARR tick is up
             this.x += this.ARM_direct;
             this.ARR_tick = 0;
         }
@@ -264,11 +264,9 @@ Piece.prototype.lock = function () {
     for (let i=0; i<this.children.length; i++) {
         this.children[i].lock();
     }
-    if (this.y <= -1) game.top_out_handler();
+    if (this.y <= -1) Game.top_out_handler();
 
     this.toBeDestroyed = true;
-    Current_piece = undefined; // goodbye world
-
 
     return;
 }
@@ -331,8 +329,8 @@ Piece.prototype.check_blocks = function () { // checks for overlaps without requ
 Piece.prototype.Update_Display = function () {
     for (let i=0; i<this.children.length; i++) {
 
-        this.children[i].display.position.x = this.children[i].x * game.block_size + Display.boardx;
-        this.children[i].display.position.y = this.children[i].y * game.block_size + Display.boardy;
+        this.children[i].display.position.x = this.children[i].x * Game.block_size + Display.boardx;
+        this.children[i].display.position.y = this.children[i].y * Game.block_size + Display.boardy;
     }
 }
 

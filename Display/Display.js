@@ -15,7 +15,6 @@ class _Display {
         this.board.drawRect(0 -10, 0 -10, 10*Game.block_size +10*2, 20*Game.block_size +10*2);  
         
         this.container.addChild(this.board);
-        app.stage.addChild(this.container);    
     }
 }
 
@@ -33,7 +32,6 @@ _Display.prototype.add_block = function(block)  {
     graphic.lineStyle(Game.Block_style.lineWidth, 0x4444444);     // linewidth, color
     graphic.drawRect(0, 0, Game.block_size, Game.block_size);  
 
-    app.stage.addChild(graphic);
     this.container.addChild(graphic);
 
     return graphic;
@@ -56,7 +54,6 @@ _Display.prototype.add_piece = function(type, offsetx, offsety, container) {
             graphic.lineStyle(Game.Block_style.lineWidth, 0x4444444);     // linewidth, color
             graphic.drawRect(0, 0, Game.block_size, Game.block_size);  
 
-            app.stage.addChild(graphic);
             container.addChild(graphic);        
         }
     }

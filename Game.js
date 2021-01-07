@@ -3,6 +3,14 @@ var Game  = {
 
     garbage: 0,
 
+    GameMode: "",
+    statistics: {
+        time: 0,
+        clearedLines: 0,
+    },
+    
+    start_time: Date.now(),
+
     gravity: 0,
     gravity_tick_limit: 10,
 
@@ -38,19 +46,36 @@ var Game  = {
 
 
     // begins the interval, as well as setting containers
-    init: function () {
+    init: function (mode) {
+        Game.statistics = {
+            time: 0,
+            clearedLines: 0,
+        };
+        Game.GameMode = mode;
         Game.over = false;
-
+        commandKey = {};
+        moveKey = {};
+        
         Display = new _Display(Game.boardX,Game.boardY);
 
         Hold = new _Hold(Game.holdX, Game.holdY);
         Preview = new _Preview(Game.previewX, Game.previewY);
         SideLineDisplay = new _SideLineDisplay(Game.SideLineDisplayX, Game.SideLineDisplayY);
 
+        Current_piece = Game.SpawnPiece(Preview.previews[0]);
 
-        clearInterval(SOURCE_LOOP);
+        Shadow_piece = new Shadow(Current_piece);
+        Shadow_piece.tick(); 
+        
+        Preview.previews.splice(0, 1);
+        Preview.update_preview();
+
         Game.LOOP = setInterval(Game.tick, FRAME_RATE);
     },
+
+
+
+
 
     // Gameplay-affecting variables
     tick: function () {        
@@ -77,7 +102,7 @@ var Game  = {
         Shadow_piece.tick(); 
 
         Game.Clear_Handler();
-        
+        Game.Mode_handler();
 
         if (Current_piece.toBeDestroyed) Current_piece = undefined;
         if (Shadow_piece.toBeDestroyed) Shadow_piece = undefined;
@@ -86,9 +111,27 @@ var Game  = {
 
         commandKey = {};
 
+
     },
 
 
+
+
+
+    Mode_handler: function () {
+
+        switch (Game.GameMode) {
+            case "Endless":
+                break;
+
+            case "40L":
+
+                if (Game.statistics.clearedLines >= 40) {
+                    Game.top_out_handler();
+                }
+                break;
+        }
+    },
 
 
 
@@ -145,7 +188,8 @@ var Game  = {
                 }
             }
         }
-                      
+        Game.Spin_Detector(clears.length);
+        
         for (let k=0; k<clears.length; k++) {           // remove and shift nodes
             for (let i=0; i<stack.length; i++) { 
 
@@ -171,7 +215,8 @@ var Game  = {
             }
         }
 
-        Game.Spin_Detector(clears.length);
+        Game.statistics.clearedLines += clears.length;
+
         return;
     },
 
@@ -187,24 +232,32 @@ var Game  = {
         let dy = [-1,1,-1,1]
         let cnt =0;
 
-        for (let i=0; i<4; i++) 
-            if (dx[i] >= 0 && dx[i] < 10 && dy < 20)
-                if (getChart(Current_piece.x+dx[i],Current_piece.y+dy[i]))
-                    cnt ++
-        isTSpin = cnt >= 3;
+        for (let i=0; i<4; i++) {
+            if (Current_piece.x+dx[i] >= 0 &&    // if in corner bounds
+                Current_piece.x+dx[i] < 10 && 
+                Current_piece.y+dy[i] < 20)  {
+
+                if (getChart(Current_piece.x+dx[i],Current_piece.y+dy[i]))  // if occupied
+                    cnt ++;
+            } else {   
+                cnt ++;
+            }
+        }
+
+        isTSpin = cnt >= 3 && Current_piece.shape == "t";
 
 
 
         if (isTSpin && clears == 1) {
-            SideLineDisplay.Text(SideLineDisplay.priority1,"T-spin Single",-1);
+            SideLineDisplay.Text(SideLineDisplay.priority1,"T-spin Single", 180, 30);
         }
 
         if (isTSpin && clears == 2) {
-            SideLineDisplay.Text(SideLineDisplay.priority1,"T-spin Double",-1);
+            SideLineDisplay.Text(SideLineDisplay.priority1,"T-spin Double", 180, 30);
         }
 
         if (isTSpin && clears == 3) {
-            SideLineDisplay.Text(SideLineDisplay.priority1,"T-spin Triple",-1);
+            SideLineDisplay.Text(SideLineDisplay.priority1,"T-spin Triple", 180, 30);
         }
     },
 
@@ -264,6 +317,10 @@ var Game  = {
         moveKey = {};
         
         clearInterval(Game.LOOP);
-        SOURCE_LOOP = setInterval(Source, FRAME_RATE);
+
+        Game.statistics.time = Date.now() - Game.start_time;
+        Results = new _Results(Game.statistics);
+        
+        return;
     },
 }

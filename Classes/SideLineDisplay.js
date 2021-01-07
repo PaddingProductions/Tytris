@@ -32,10 +32,10 @@ class _SideLineDisplay {
 }
 
 // it will display a text with a pre-defined location&style, and also begin a timer
-_SideLineDisplay.prototype.Text = function(object, text, life) { 
+_SideLineDisplay.prototype.Text = function(object, text, life, fade) { 
     object.alpha = 1;
     object.text = text;
-    this.timers.push({object: object,life: life});
+    this.timers.push({object: object,life: life, fade: fade});
 }
 
 
@@ -48,8 +48,10 @@ _SideLineDisplay.prototype.Update_Display = function() {
 
         this.timers[i].life --;
 
+        if (this.timers[i].life <= this.timers[i].fade) {
+            this.timers[i].object.alpha -= 1/this.timers[i].fade;
+        }
         if (this.timers[i].life == 0) {
-            this.timers[i].object.alpha = 0;
             this.timers.splice(i,1);
             i --;
         }

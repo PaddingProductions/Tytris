@@ -16,14 +16,19 @@ OverloadChart = []; // occupation chart for blocks that past the boarder
 OccupationChart = []; // It displays ur stack for the computation part, marks as 1 if occupied
 
 getChart = function (x,y) {
-    if (y < 0) 
+    if (y < 0)  {
+        if (Math.abs(y) >= OverloadChart.length) return 0;
+
         return OverloadChart[OverloadChart.length - (Math.abs(y))][x];
+    }
     return OccupationChart[y][x];
 } 
 
 setChart = function (x,y, val) {
-    if (y < 0) 
+    if (y < 0) {
+
         return OverloadChart[OverloadChart.length - (Math.abs(y))][x] = val;
+    }
     return OccupationChart[y][x] = val;
 }
 
